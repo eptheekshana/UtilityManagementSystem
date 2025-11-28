@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Bills</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="generate_bill.html" class="nav-item">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Generate Bill</span>
+            </a>
+            <a href="bills.html" class="nav-item active">
+                <i class="fas fa-receipt"></i>
+                <span>View Bills</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">All Bills</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="window.location.href='generate_bill.html'">
+                    <i class="fas fa-plus"></i> Generate New Bill
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- Stats Cards -->
+            <div class="stats-mini-grid">
+                <div class="stat-mini-card blue">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="totalBills">0</h4>
+                        <p>Total Bills</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card green">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="paidBills">0</h4>
+                        <p>Paid</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card orange">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="pendingBills">0</h4>
+                        <p>Pending</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card red">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="overdueBills">0</h4>
+                        <p>Overdue</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchBill" placeholder="Search by customer name or bill ID...">
+                </div>
+                <select id="filterStatus" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Partial">Partial</option>
+                    <option value="Overdue">Overdue</option>
+                </select>
+                <select id="filterMonth" class="filter-select">
+                    <option value="">All Months</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+
+            <!-- Bills Table -->
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Bill ID</th>
+                            <th>Customer</th>
+                            <th>Meter</th>
+                            <th>Utility</th>
+                            <th>Period</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billsTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/billing.js"></script>
+</body>
+</html>

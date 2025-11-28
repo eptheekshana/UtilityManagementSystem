@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Payment History</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="payments.html" class="nav-item">
+                <i class="fas fa-credit-card"></i>
+                <span>Process Payment</span>
+            </a>
+            <a href="history.html" class="nav-item active">
+                <i class="fas fa-history"></i>
+                <span>Payment History</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Payment History</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="exportToCSV()">
+                    <i class="fas fa-download"></i> Export CSV
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- Stats -->
+            <div class="stats-mini-grid">
+                <div class="stat-mini-card blue">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="totalCollected">$0</h4>
+                        <p>Total Collected</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card green">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="totalPayments">0</h4>
+                        <p>Payments</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card orange">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="todayPayments">$0</h4>
+                        <p>Today's Collection</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchPayment" placeholder="Search by customer or transaction...">
+                </div>
+                <select id="filterMethod" class="filter-select">
+                    <option value="">All Methods</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Card">Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Mobile Money">Mobile Money</option>
+                    <option value="Cheque">Cheque</option>
+                </select>
+                <input type="date" id="filterDateFrom" class="filter-select">
+                <input type="date" id="filterDateTo" class="filter-select">
+                <button class="btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+            </div>
+
+            <!-- Payment History Table -->
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Bill ID</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Transaction Ref</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentHistoryBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let paymentsData = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPaymentHistory();
+            setupFilters();
+        });
+
+        async function loadPaymentHistory() {
+            try {
+                const response = await fetch('http://localhost:3000/api/payments/history', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    paymentsData = result.data;
+                    updateStats();
+                    displayPayments(paymentsData);
+                }
+                
+            } catch (error) {
+                console.error('Error loading payment history:', error);
+            }
+        }
+
+        function updateStats() {
+            const total = paymentsData.reduce((sum, p) => sum + parseFloat(p.AmountPaid), 0);
+            const today = paymentsData
+                .filter(p => new Date(p.PaymentDate).toDateString() === new Date().toDateString())
+                .reduce((sum, p) => sum + parseFloat(p.AmountPaid), 0);
+            
+            document.getElementById('totalCollected').textContent = formatCurrency(total);
+            document.getElementById('totalPayments').textContent = paymentsData.length;
+            document.getElementById('todayPayments').textContent = formatCurrency(today);
+        }
+
+        function displayPayments(payments) {
+            const tbody = document.getElementById('paymentHistoryBody');
+            tbody.innerHTML = '';
+            
+            if (payments.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            <div class="empty-state">
+                                <i class="fas fa-receipt"></i>
+                                <h3>No Payments Found</h3>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            payments.forEach(payment => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${payment.PaymentID}</strong></td>
+                    <td>${formatDateTime(payment.PaymentDate)}</td>
+                    <td>${payment.CustomerName}</td>
+                    <td>#${payment.BillingID}</td>
+                    <td><strong>${formatCurrency(payment.AmountPaid)}</strong></td>
+                    <td><span class="badge">${payment.PaymentMethod}</span></td>
+                    <td>${payment.TransactionReference || 'N/A'}</td>
+                    <td>
+                        <button class="btn-icon" onclick="viewReceipt(${payment.PaymentID})" title="View Receipt">
+                            <i class="fas fa-receipt"></i>
+                        </button>
+                        <button class="btn-icon" onclick="printReceipt(${payment.PaymentID})" title="Print">
+                            <i class="fas fa-print"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function setupFilters() {
+            document.getElementById('searchPayment').addEventListener('input', filterPayments);
+            document.getElementById('filterMethod').addEventListener('change', filterPayments);
+        }
+
+        function filterPayments() {
+            const searchTerm = document.getElementById('searchPayment').value.toLowerCase();
+            const methodFilter = document.getElementById('filterMethod').value;
+            
+            let filtered = paymentsData;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(p => 
+                    p.CustomerName.toLowerCase().includes(searchTerm) ||
+                    p.TransactionReference?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (methodFilter) {
+                filtered = filtered.filter(p => p.PaymentMethod === methodFilter);
+            }
+            
+            displayPayments(filtered);
+        }
+
+        function applyFilters() {
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
+            
+            let filtered = paymentsData;
+            
+            if (dateFrom) {
+                filtered = filtered.filter(p => new Date(p.PaymentDate) >= new Date(dateFrom));
+            }
+            
+            if (dateTo) {
+                filtered = filtered.filter(p => new Date(p.PaymentDate) <= new Date(dateTo));
+            }
+            
+            filterPayments();
+        }
+
+        function viewReceipt(paymentId) {
+            window.location.href = `receipts.html?paymentId=${paymentId}`;
+        }
+
+        function printReceipt(paymentId) {
+            window.open(`receipts.html?paymentId=${paymentId}&print=true`, '_blank');
+        }
+
+        function exportToCSV() {
+            const csv = [
+                ['Payment ID', 'Date', 'Customer', 'Bill ID', 'Amount', 'Method', 'Transaction Ref'],
+                ...paymentsData.map(p => [
+                    p.PaymentID,
+                    formatDateTime(p.PaymentDate),
+                    p.CustomerName,
+                    p.BillingID,
+                    p.AmountPaid,
+                    p.PaymentMethod,
+                    p.TransactionReference || 'N/A'
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `payment_history_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function formatDateTime(date) {
+            return new Date(date).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>

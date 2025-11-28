@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Payment Receipt</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+        }
+        
+        .receipt-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .receipt-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.5;
+        }
+        
+        .receipt-header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .receipt-number {
+            font-size: 18px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .receipt-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .receipt-body {
+            padding: 40px;
+        }
+        
+        .receipt-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px dashed #e0e0e0;
+        }
+        
+        .receipt-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .receipt-section h3 {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 15px;
+        }
+        
+        .receipt-row.highlight {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .receipt-row span {
+            color: #666;
+        }
+        
+        .receipt-row strong {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .amount-paid {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .amount-paid .label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .amount-paid .amount {
+            font-size: 42px;
+            font-weight: 700;
+        }
+        
+        .receipt-footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .receipt-footer p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .receipt-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        
+        .status-badge-large {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        @media print {
+            .sidebar, .top-header, .receipt-actions, .btn-primary, .btn-secondary {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .receipt-container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="payments.html" class="nav-item">
+                <i class="fas fa-credit-card"></i>
+                <span>Process Payment</span>
+            </a>
+            <a href="history.html" class="nav-item">
+                <i class="fas fa-history"></i>
+                <span>Payment History</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Payment Receipt</h1>
+            </div>
+            <div class="header-right">
+                <a href="history.html" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <div class="receipt-container">
+                
+                <!-- Receipt Header -->
+                <div class="receipt-header">
+                    <div class="receipt-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h1>PAYMENT RECEIPT</h1>
+                    <p class="receipt-number">Receipt #<span id="receiptNumber">-</span></p>
+                    <p class="status-badge-large">PAID</p>
+                </div>
+
+                <!-- Receipt Body -->
+                <div class="receipt-body">
+                    
+                    <!-- Payment Amount -->
+                    <div class="amount-paid">
+                        <div class="label">Amount Paid</div>
+                        <div class="amount" id="amountPaid">$0.00</div>
+                    </div>
+
+                    <!-- Payment Information -->
+                    <div class="receipt-section">
+                        <h3><i class="fas fa-info-circle"></i> Payment Information</h3>
+                        <div class="receipt-row">
+                            <span>Payment Date:</span>
+                            <strong id="paymentDate">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Payment Method:</span>
+                            <strong id="paymentMethod">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Transaction Reference:</span>
+                            <strong id="transactionRef">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Received By:</span>
+                            <strong id="receivedBy">-</strong>
+                        </div>
+                    </div>
+
+                    <!-- Customer Information -->
+                    <div class="receipt-section">
+                        <h3><i class="fas fa-user"></i> Customer Information</h3>
+                        <div class="receipt-row">
+                            <span>Customer Name:</span>
+                            <strong id="customerName">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Customer ID:</span>
+                            <strong id="customerId">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Email:</span>
+                            <strong id="customerEmail">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Phone:</span>
+                            <strong id="customerPhone">-</strong>
+                        </div>
+                    </div>
+
+                    <!-- Bill Information -->
+                    <div class="receipt-section">
+                        <h3><i class="fas fa-file-invoice"></i> Bill Information</h3>
+                        <div class="receipt-row">
+                            <span>Bill Number:</span>
+                            <strong id="billNumber">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Billing Period:</span>
+                            <strong id="billingPeriod">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Total Bill Amount:</span>
+                            <strong id="billAmount">-</strong>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Previous Balance:</span>
+                            <strong id="previousBalance">-</strong>
+                        </div>
+                        <div class="receipt-row highlight">
+                            <span>Remaining Balance:</span>
+                            <strong id="remainingBalance">$0.00</strong>
+                        </div>
+                    </div>
+
+                    <!-- QR Code -->
+                    <div class="receipt-section" style="text-align: center;">
+                        <h3><i class="fas fa-qrcode"></i> Verification Code</h3>
+                        <div class="qr-code">
+                            <i class="fas fa-qrcode" style="font-size: 80px; color: #ddd;"></i>
+                        </div>
+                        <p style="color: #666; font-size: 12px;">Scan to verify receipt authenticity</p>
+                    </div>
+
+                </div>
+
+                <!-- Receipt Footer -->
+                <div class="receipt-footer">
+                    <p><strong>Thank you for your payment!</strong></p>
+                    <p>This is an official receipt from Utility Management System.<br>
+                    For any queries, please contact: support@ums.com | +1 (555) 123-4567</p>
+                    
+                    <div class="receipt-actions">
+                        <button class="btn-primary" onclick="window.print()">
+                            <i class="fas fa-print"></i> Print Receipt
+                        </button>
+                        <button class="btn-primary" onclick="downloadPDF()">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                        <button class="btn-secondary" onclick="emailReceipt()">
+                            <i class="fas fa-envelope"></i> Email Receipt
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let receiptData = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentId = urlParams.get('paymentId');
+            const autoPrint = urlParams.get('print');
+            
+            if (paymentId) {
+                loadReceiptData(paymentId);
+                
+                if (autoPrint === 'true') {
+                    setTimeout(() => window.print(), 1000);
+                }
+            }
+        });
+
+        async function loadReceiptData(paymentId) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/payments/${paymentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    receiptData = result.data;
+                    displayReceipt(receiptData);
+                }
+                
+            } catch (error) {
+                console.error('Error loading receipt:', error);
+                alert('Failed to load receipt data');
+            }
+        }
+
+        function displayReceipt(data) {
+            document.getElementById('receiptNumber').textContent = data.PaymentID;
+            document.getElementById('amountPaid').textContent = formatCurrency(data.AmountPaid);
+            
+            document.getElementById('paymentDate').textContent = formatDateTime(data.PaymentDate);
+            document.getElementById('paymentMethod').textContent = data.PaymentMethod;
+            document.getElementById('transactionRef').textContent = data.TransactionReference || 'N/A';
+            document.getElementById('receivedBy').textContent = data.ReceivedByName || 'System';
+            
+            document.getElementById('customerName').textContent = data.CustomerName;
+            document.getElementById('customerId').textContent = data.CustomerID;
+            document.getElementById('customerEmail').textContent = data.Email || 'N/A';
+            document.getElementById('customerPhone').textContent = data.Phone || 'N/A';
+            
+            document.getElementById('billNumber').textContent = data.BillingID;
+            document.getElementById('billingPeriod').textContent = 
+                `${formatDate(data.BillingPeriodStart)} - ${formatDate(data.BillingPeriodEnd)}`;
+            document.getElementById('billAmount').textContent = formatCurrency(data.BillAmount);
+            document.getElementById('previousBalance').textContent = formatCurrency(data.OutstandingBalance + data.AmountPaid);
+            document.getElementById('remainingBalance').textContent = formatCurrency(data.RemainingBalance);
+        }
+
+        async function downloadPDF() {
+            try {
+                const response = await fetch(`http://localhost:3000/api/payments/${receiptData.PaymentID}/pdf`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Receipt_${receiptData.PaymentID}.pdf`;
+                a.click();
+                
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+                alert('Failed to download PDF');
+            }
+        }
+
+        async function emailReceipt() {
+            if (!confirm('Send this receipt to customer email?')) return;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/payments/${receiptData.PaymentID}/email`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Receipt sent successfully!');
+                }
+                
+            } catch (error) {
+                console.error('Error sending email:', error);
+                alert('Failed to send email');
+            }
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatDateTime(date) {
+            return new Date(date).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>

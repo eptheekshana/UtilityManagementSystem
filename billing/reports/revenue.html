@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Revenue Report</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="revenue.html" class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>Revenue Report</span>
+            </a>
+            <a href="defaulters.html" class="nav-item">
+                <i class="fas fa-user-slash"></i>
+                <span>Defaulters</span>
+            </a>
+            <a href="usage.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Usage Statistics</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Revenue Report</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="exportReport()">
+                    <i class="fas fa-download"></i> Export PDF
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- Date Range Filter -->
+            <div class="report-filter-section">
+                <div class="filter-group">
+                    <label>Period:</label>
+                    <select id="periodFilter" onchange="updateReport()">
+                        <option value="month">This Month</option>
+                        <option value="quarter">This Quarter</option>
+                        <option value="year">This Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="filter-group" id="customDateRange" style="display: none;">
+                    <input type="date" id="startDate">
+                    <span>to</span>
+                    <input type="date" id="endDate">
+                    <button class="btn-primary" onclick="applyCustomRange()">Apply</button>
+                </div>
+            </div>
+
+            <!-- Revenue Summary Cards -->
+            <div class="revenue-summary-grid">
+                <div class="revenue-card">
+                    <div class="revenue-icon blue">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="revenue-info">
+                        <h3 id="totalRevenue">$0</h3>
+                        <p>Total Revenue</p>
+                        <span class="trend positive">
+                            <i class="fas fa-arrow-up"></i> 12.5%
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="revenue-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="revenue-info">
+                        <h3 id="collectedRevenue">$0</h3>
+                        <p>Collected</p>
+                        <span class="trend positive">
+                            <i class="fas fa-arrow-up"></i> 8.3%
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="revenue-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="revenue-info">
+                        <h3 id="pendingRevenue">$0</h3>
+                        <p>Pending</p>
+                        <span class="trend negative">
+                            <i class="fas fa-arrow-down"></i> 3.2%
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="revenue-card">
+                    <div class="revenue-icon purple">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="revenue-info">
+                        <h3 id="collectionRate">0%</h3>
+                        <p>Collection Rate</p>
+                        <span class="trend positive">
+                            <i class="fas fa-arrow-up"></i> 2.1%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-section">
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3>Revenue Trend</h3>
+                        <div class="chart-legend">
+                            <span><i class="fas fa-circle" style="color: #4facfe;"></i> Collected</span>
+                            <span><i class="fas fa-circle" style="color: #fa709a;"></i> Pending</span>
+                        </div>
+                    </div>
+                    <canvas id="revenueTrendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Revenue by Utility Type</h3>
+                    </div>
+                    <canvas id="revenueByUtilityChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Revenue by Customer Type</h3>
+                    </div>
+                    <canvas id="revenueByCustomerChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Revenue Details</h3>
+                    <button class="btn-secondary" onclick="exportTableToCSV()">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                </div>
+                
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Electricity</th>
+                            <th>Water</th>
+                            <th>Gas</th>
+                            <th>Sewage</th>
+                            <th>Total Billed</th>
+                            <th>Collected</th>
+                            <th>Pending</th>
+                            <th>Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="revenueTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td><strong>TOTAL</strong></td>
+                            <td id="totalElectricity">$0</td>
+                            <td id="totalWater">$0</td>
+                            <td id="totalGas">$0</td>
+                            <td id="totalSewage">$0</td>
+                            <td id="grandTotal">$0</td>
+                            <td id="totalCollected">$0</td>
+                            <td id="totalPending">$0</td>
+                            <td id="avgRate">0%</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../assets/js/revenue_report.js"></script>
+</body>
+</html>

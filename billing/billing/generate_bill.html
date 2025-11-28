@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Generate Bill</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="generate_bill.html" class="nav-item active">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Generate Bill</span>
+            </a>
+            <a href="bills.html" class="nav-item">
+                <i class="fas fa-receipt"></i>
+                <span>View Bills</span>
+            </a>
+            <a href="../payments/payments.html" class="nav-item">
+                <i class="fas fa-credit-card"></i>
+                <span>Payments</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Generate Bill</h1>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <div class="billing-wizard">
+                
+                <!-- Step 1: Select Customer/Meter -->
+                <div class="wizard-step active" id="step1">
+                    <div class="wizard-card">
+                        <h2><i class="fas fa-user-check"></i> Step 1: Select Customer & Meter</h2>
+                        
+                        <div class="form-group">
+                            <label>Search Customer</label>
+                            <input type="text" id="customerSearch" placeholder="Enter customer name, ID, or email...">
+                        </div>
+                        
+                        <div id="customerResults" class="customer-list">
+                            <!-- Dynamic customer cards -->
+                        </div>
+                        
+                        <div id="meterSelection" style="display: none;">
+                            <h3>Select Meter</h3>
+                            <div id="meterList" class="meter-selection-grid">
+                                <!-- Dynamic meter cards -->
+                            </div>
+                        </div>
+                        
+                        <div class="wizard-actions">
+                            <button class="btn-primary" id="nextToStep2" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Billing Period & Consumption -->
+                <div class="wizard-step" id="step2">
+                    <div class="wizard-card">
+                        <h2><i class="fas fa-calendar"></i> Step 2: Billing Period & Consumption</h2>
+                        
+                        <div class="selected-info">
+                            <div class="info-item">
+                                <strong>Customer:</strong>
+                                <span id="selectedCustomerName">-</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Meter:</strong>
+                                <span id="selectedMeterNumber">-</span>
+                            </div>
+                        </div>
+                        
+                        <form id="billingPeriodForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Billing Period Start</label>
+                                    <input type="date" name="periodStart" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Billing Period End</label>
+                                    <input type="date" name="periodEnd" required>
+                                </div>
+                            </div>
+                            
+                            <div class="consumption-display">
+                                <div class="consumption-item">
+                                    <label>Previous Reading</label>
+                                    <div class="reading-value" id="previousReading">0</div>
+                                </div>
+                                <div class="consumption-item">
+                                    <label>Current Reading</label>
+                                    <div class="reading-value" id="currentReading">0</div>
+                                </div>
+                                <div class="consumption-item highlight">
+                                    <label>Consumption</label>
+                                    <div class="reading-value" id="consumption">0</div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="wizard-actions">
+                            <button class="btn-secondary" onclick="goToStep(1)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-primary" id="nextToStep3">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Calculate & Generate -->
+                <div class="wizard-step" id="step3">
+                    <div class="wizard-card">
+                        <h2><i class="fas fa-calculator"></i> Step 3: Bill Calculation</h2>
+                        
+                        <div class="bill-preview">
+                            <div class="bill-header">
+                                <h3>BILL PREVIEW</h3>
+                                <div class="bill-number">Bill #<span id="billNumber">-</span></div>
+                            </div>
+                            
+                            <div class="bill-details">
+                                <div class="detail-row">
+                                    <span>Customer:</span>
+                                    <strong id="billCustomerName">-</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Meter Number:</span>
+                                    <strong id="billMeterNumber">-</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Utility Type:</span>
+                                    <strong id="billUtilityType">-</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Billing Period:</span>
+                                    <strong id="billPeriod">-</strong>
+                                </div>
+                            </div>
+                            
+                            <div class="bill-calculation">
+                                <div class="calc-row">
+                                    <span>Consumption:</span>
+                                    <strong id="billConsumption">0</strong>
+                                </div>
+                                <div class="calc-row">
+                                    <span>Rate per Unit:</span>
+                                    <strong id="billRate">$0.00</strong>
+                                </div>
+                                <div class="calc-row">
+                                    <span>Base Amount:</span>
+                                    <strong id="billBaseAmount">$0.00</strong>
+                                </div>
+                                <div class="calc-row">
+                                    <span>Tax (15%):</span>
+                                    <strong id="billTax">$0.00</strong>
+                                </div>
+                                <div class="calc-row total">
+                                    <span>TOTAL AMOUNT:</span>
+                                    <strong id="billTotal">$0.00</strong>
+                                </div>
+                            </div>
+                            
+                            <div class="bill-footer">
+                                <div class="detail-row">
+                                    <span>Due Date:</span>
+                                    <strong id="billDueDate">-</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="wizard-actions">
+                            <button class="btn-secondary" onclick="goToStep(2)">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-success" id="generateBillBtn">
+                                <i class="fas fa-check"></i> Generate Bill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/generate_bill.js"></script>
+</body>
+</html>

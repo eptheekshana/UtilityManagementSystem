@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - View Bill</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .bill-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .bill-header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+        .bill-header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .bill-number {
+            font-size: 18px;
+            color: #666;
+        }
+        .bill-section {
+            margin-bottom: 30px;
+        }
+        .bill-section h3 {
+            font-size: 18px;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        .bill-row.total {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            border-top: 3px solid #667eea;
+            border-bottom: 3px solid #667eea;
+            margin-top: 20px;
+            padding: 20px 0;
+        }
+        .bill-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+        .print-only {
+            display: none;
+        }
+        @media print {
+            .sidebar, .top-header, .bill-actions {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .print-only {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="bills.html" class="nav-item">
+                <i class="fas fa-receipt"></i>
+                <span>All Bills</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Bill Details</h1>
+            </div>
+            <div class="header-right">
+                <a href="bills.html" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <div class="bill-container">
+                <div class="bill-header">
+                    <h1>UTILITY BILL</h1>
+                    <p class="bill-number">Bill #<span id="billNumber">-</span></p>
+                    <p class="print-only">Utility Management System</p>
+                </div>
+
+                <div class="bill-section">
+                    <h3>Customer Information</h3>
+                    <div class="bill-row">
+                        <span>Customer Name:</span>
+                        <strong id="customerName">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Customer ID:</span>
+                        <strong id="customerId">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Email:</span>
+                        <strong id="customerEmail">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Phone:</span>
+                        <strong id="customerPhone">-</strong>
+                    </div>
+                </div>
+
+                <div class="bill-section">
+                    <h3>Meter Information</h3>
+                    <div class="bill-row">
+                        <span>Meter Number:</span>
+                        <strong id="meterNumber">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Utility Type:</span>
+                        <strong id="utilityType">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Meter Type:</span>
+                        <strong id="meterType">-</strong>
+                    </div>
+                </div>
+
+                <div class="bill-section">
+                    <h3>Billing Period</h3>
+                    <div class="bill-row">
+                        <span>Period Start:</span>
+                        <strong id="periodStart">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Period End:</span>
+                        <strong id="periodEnd">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Bill Date:</span>
+                        <strong id="billDate">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Due Date:</span>
+                        <strong id="dueDate">-</strong>
+                    </div>
+                </div>
+
+                <div class="bill-section">
+                    <h3>Usage & Charges</h3>
+                    <div class="bill-row">
+                        <span>Previous Reading:</span>
+                        <strong id="prevReading">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Current Reading:</span>
+                        <strong id="currReading">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Consumption:</span>
+                        <strong id="consumption">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Rate per Unit:</span>
+                        <strong id="rate">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Base Amount:</span>
+                        <strong id="baseAmount">-</strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Tax (15%):</span>
+                        <strong id="taxAmount">-</strong>
+                    </div>
+                    <div class="bill-row total">
+                        <span>TOTAL AMOUNT:</span>
+                        <strong id="totalAmount">$0.00</strong>
+                    </div>
+                </div>
+
+                <div class="bill-section">
+                    <h3>Payment Status</h3>
+                    <div class="bill-row">
+                        <span>Status:</span>
+                        <strong><span id="paymentStatus" class="status-badge">-</span></strong>
+                    </div>
+                    <div class="bill-row">
+                        <span>Outstanding Balance:</span>
+                        <strong id="outstanding">$0.00</strong>
+                    </div>
+                </div>
+
+                <div class="bill-actions">
+                    <button class="btn-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Bill
+                    </button>
+                    <button class="btn-primary" onclick="downloadPDF()">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                    <button class="btn-success" onclick="payNow()" id="payButton">
+                        <i class="fas fa-credit-card"></i> Pay Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let billData = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const billId = urlParams.get('id');
+            if (billId) {
+                loadBillDetails(billId);
+            }
+        });
+
+        async function loadBillDetails(billId) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/billing/${billId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    billData = result.data;
+                    displayBill(billData);
+                }
+                
+            } catch (error) {
+                console.error('Error loading bill:', error);
+                alert('Failed to load bill details');
+            }
+        }
+
+        function displayBill(bill) {
+            document.getElementById('billNumber').textContent = bill.BillingID;
+            document.getElementById('customerName').textContent = bill.CustomerName;
+            document.getElementById('customerId').textContent = bill.CustomerID;
+            document.getElementById('customerEmail').textContent = bill.Email || 'N/A';
+            document.getElementById('customerPhone').textContent = bill.Phone || 'N/A';
+            
+            document.getElementById('meterNumber').textContent = bill.MeterNumber;
+            document.getElementById('utilityType').textContent = bill.UtilityType;
+            document.getElementById('meterType').textContent = bill.MeterType || 'N/A';
+            
+            document.getElementById('periodStart').textContent = formatDate(bill.BillingPeriodStart);
+            document.getElementById('periodEnd').textContent = formatDate(bill.BillingPeriodEnd);
+            document.getElementById('billDate').textContent = formatDate(bill.BillingDate);
+            document.getElementById('dueDate').textContent = formatDate(bill.DueDate);
+            
+            document.getElementById('prevReading').textContent = bill.PreviousReading || '0';
+            document.getElementById('currReading').textContent = bill.CurrentReading || '0';
+            document.getElementById('consumption').textContent = `${bill.Consumption} units`;
+            document.getElementById('rate').textContent = formatCurrency(bill.RateApplied);
+            document.getElementById('baseAmount').textContent = formatCurrency(bill.BaseAmount);
+            document.getElementById('taxAmount').textContent = formatCurrency(bill.TaxAmount);
+            document.getElementById('totalAmount').textContent = formatCurrency(bill.TotalAmount);
+            
+            const statusBadge = document.getElementById('paymentStatus');
+            statusBadge.textContent = bill.PaymentStatus;
+            statusBadge.className = `status-badge ${bill.PaymentStatus.toLowerCase()}`;
+            
+            document.getElementById('outstanding').textContent = formatCurrency(bill.OutstandingBalance);
+            
+            // Hide pay button if already paid
+            if (bill.PaymentStatus === 'Paid') {
+                document.getElementById('payButton').style.display = 'none';
+            }
+        }
+
+        function payNow() {
+            if (billData) {
+                window.location.href = `../payments/payments.html?billId=${billData.BillingID}`;
+            }
+        }
+
+        async function downloadPDF() {
+            try {
+                const response = await fetch(`http://localhost:3000/api/billing/${billData.BillingID}/pdf`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Bill_${billData.BillingID}.pdf`;
+                a.click();
+                
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+                alert('Failed to download PDF');
+            }
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>

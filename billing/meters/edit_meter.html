@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Edit Meter</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="meters.html" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Meters</span>
+            </a>
+            <a href="readings.html" class="nav-item">
+                <i class="fas fa-book-reader"></i>
+                <span>Readings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Edit Meter</h1>
+            </div>
+            <div class="header-right">
+                <a href="meters.html" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <div class="form-card">
+                <div class="form-header">
+                    <i class="fas fa-edit"></i>
+                    <h2>Update Meter Information</h2>
+                </div>
+                
+                <form id="editMeterForm">
+                    <input type="hidden" id="meterId" name="meterId">
+                    
+                    <!-- Meter Identification -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-barcode"></i> Meter Identification</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Meter Number *</label>
+                                <input type="text" id="meterNumber" name="meterNumber" required readonly>
+                                <small>Meter number cannot be changed</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Serial Number</label>
+                                <input type="text" id="serialNumber" name="serialNumber">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Info (Read-only) -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Assigned Customer</h3>
+                        <div class="info-display">
+                            <div class="info-row">
+                                <span>Customer Name:</span>
+                                <strong id="displayCustomerName">-</strong>
+                            </div>
+                            <div class="info-row">
+                                <span>Customer ID:</span>
+                                <strong id="displayCustomerId">-</strong>
+                            </div>
+                            <div class="info-row">
+                                <span>Customer Type:</span>
+                                <strong id="displayCustomerType">-</strong>
+                            </div>
+                        </div>
+                        <small><i class="fas fa-info-circle"></i> Contact admin to change customer assignment</small>
+                    </div>
+
+                    <!-- Meter Type & Utility -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-cogs"></i> Meter Specifications</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Utility Type *</label>
+                                <select id="utilityType" name="utilityType" required>
+                                    <option value="Electricity">⚡ Electricity</option>
+                                    <option value="Water">💧 Water</option>
+                                    <option value="Gas">🔥 Gas</option>
+                                    <option value="Sewage">🚰 Sewage</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Meter Type *</label>
+                                <select id="meterType" name="meterType" required>
+                                    <option value="Analog">📊 Analog</option>
+                                    <option value="Digital">📱 Digital</option>
+                                    <option value="Smart">🤖 Smart</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Manufacturer</label>
+                                <input type="text" id="manufacturer" name="manufacturer">
+                            </div>
+                            <div class="form-group">
+                                <label>Model Number</label>
+                                <input type="text" id="modelNumber" name="modelNumber">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status & Maintenance -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-info-circle"></i> Status & Maintenance</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Current Status *</label>
+                                <select id="status" name="status" required>
+                                    <option value="Active">✅ Active</option>
+                                    <option value="Inactive">⏸️ Inactive</option>
+                                    <option value="Maintenance">🔧 Maintenance</option>
+                                    <option value="Faulty">❌ Faulty</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Installation Date</label>
+                                <input type="date" id="installationDate" name="installationDate">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Last Maintenance Date</label>
+                                <input type="date" id="lastMaintenanceDate" name="lastMaintenanceDate">
+                            </div>
+                            <div class="form-group">
+                                <label>Next Maintenance Due</label>
+                                <input type="date" id="nextMaintenance" name="nextMaintenance">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-map-marker-alt"></i> Location Information</h3>
+                        <div class="form-group">
+                            <label>Installation Location *</label>
+                            <input type="text" id="location" name="location" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>GPS Latitude</label>
+                                <input type="text" id="latitude" name="latitude">
+                            </div>
+                            <div class="form-group">
+                                <label>GPS Longitude</label>
+                                <input type="text" id="longitude" name="longitude">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Installation Notes</label>
+                            <textarea id="installationNotes" name="installationNotes" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Technical Details -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-wrench"></i> Technical Specifications</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Accuracy Class</label>
+                                <select id="accuracyClass" name="accuracyClass">
+                                    <option value="">Select Class</option>
+                                    <option value="0.5">Class 0.5</option>
+                                    <option value="1.0">Class 1.0</option>
+                                    <option value="2.0">Class 2.0</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Capacity</label>
+                                <input type="number" id="maxCapacity" name="maxCapacity" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Communication Protocol</label>
+                                <select id="protocol" name="protocol">
+                                    <option value="">Not Applicable</option>
+                                    <option value="Modbus">Modbus RTU</option>
+                                    <option value="DLMS">DLMS/COSEM</option>
+                                    <option value="LoRaWAN">LoRaWAN</option>
+                                    <option value="WiFi">WiFi</option>
+                                    <option value="Cellular">Cellular</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Device ID</label>
+                                <input type="text" id="deviceId" name="deviceId">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warranty -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-shield-alt"></i> Warranty Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Warranty Expiry</label>
+                                <input type="date" id="warrantyExpiry" name="warrantyExpiry">
+                            </div>
+                            <div class="form-group">
+                                <label>Calibration Date</label>
+                                <input type="date" id="calibrationDate" name="calibrationDate">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Log -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-history"></i> Activity Information</h3>
+                        <div class="info-display">
+                            <div class="info-row">
+                                <span>Created On:</span>
+                                <strong id="displayCreatedAt">-</strong>
+                            </div>
+                            <div class="info-row">
+                                <span>Last Updated:</span>
+                                <strong id="displayUpdatedAt">-</strong>
+                            </div>
+                            <div class="info-row">
+                                <span>Total Readings:</span>
+                                <strong id="displayReadingCount">-</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="window.location.href='meters.html'">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="button" class="btn-danger" onclick="deactivateMeter()">
+                            <i class="fas fa-power-off"></i> Deactivate Meter
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Update Meter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let meterData = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const meterId = urlParams.get('id');
+            
+            if (meterId) {
+                loadMeterData(meterId);
+            } else {
+                alert('No meter ID provided');
+                window.location.href = 'meters.html';
+            }
+            
+            setupForm();
+        });
+
+        // LOAD METER DATA
+        async function loadMeterData(meterId) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/meters/${meterId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    meterData = result.data;
+                    populateForm(meterData);
+                } else {
+                    alert('Meter not found');
+                    window.location.href = 'meters.html';
+                }
+                
+            } catch (error) {
+                console.error('Error loading meter:', error);
+                alert('Failed to load meter data');
+            }
+        }
+
+        // POPULATE FORM
+        function populateForm(meter) {
+            // Basic Info
+            document.getElementById('meterId').value = meter.MeterID;
+            document.getElementById('meterNumber').value = meter.MeterNumber;
+            document.getElementById('serialNumber').value = meter.SerialNumber || '';
+            
+            // Customer Info (Display only)
+            document.getElementById('displayCustomerName').textContent = meter.CustomerName || 'Unassigned';
+            document.getElementById('displayCustomerId').textContent = meter.CustomerID || 'N/A';
+            document.getElementById('displayCustomerType').textContent = meter.CustomerType || 'N/A';
+            
+            // Specifications
+            document.getElementById('utilityType').value = meter.UtilityType;
+            document.getElementById('meterType').value = meter.MeterType;
+            document.getElementById('manufacturer').value = meter.Manufacturer || '';
+            document.getElementById('modelNumber').value = meter.ModelNumber || '';
+            
+            // Status & Dates
+            document.getElementById('status').value = meter.Status;
+            document.getElementById('installationDate').value = formatDateForInput(meter.InstallationDate);
+            document.getElementById('lastMaintenanceDate').value = formatDateForInput(meter.LastMaintenanceDate);
+            document.getElementById('nextMaintenance').value = formatDateForInput(meter.NextMaintenance);
+            
+            // Location
+            document.getElementById('location').value = meter.Location || '';
+            document.getElementById('latitude').value = meter.Latitude || '';
+            document.getElementById('longitude').value = meter.Longitude || '';
+            document.getElementById('installationNotes').value = meter.InstallationNotes || '';
+            
+            // Technical
+            document.getElementById('accuracyClass').value = meter.AccuracyClass || '';
+            document.getElementById('maxCapacity').value = meter.MaxCapacity || '';
+            document.getElementById('protocol').value = meter.Protocol || '';
+            document.getElementById('deviceId').value = meter.DeviceId || '';
+            
+            // Warranty
+            document.getElementById('warrantyExpiry').value = formatDateForInput(meter.WarrantyExpiry);
+            document.getElementById('calibrationDate').value = formatDateForInput(meter.CalibrationDate);
+            
+            // Activity Info
+            document.getElementById('displayCreatedAt').textContent = formatDateTime(meter.CreatedAt);
+            document.getElementById('displayUpdatedAt').textContent = formatDateTime(meter.UpdatedAt);
+            document.getElementById('displayReadingCount').textContent = meter.ReadingCount || '0';
+        }
+
+        // SETUP FORM
+        function setupForm() {
+            document.getElementById('editMeterForm').addEventListener('submit', updateMeter);
+        }
+
+        // UPDATE METER
+        async function updateMeter(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const updatedData = Object.fromEntries(formData);
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/meters/${updatedData.meterId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
+                    btn.style.background = 'linear-gradient(135deg, #11998e, #38ef7d)';
+                    
+                    showNotification('success', 'Meter updated successfully');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'meters.html';
+                    }, 1500);
+                } else {
+                    throw new Error(result.message);
+                }
+                
+            } catch (error) {
+                console.error('Error updating meter:', error);
+                btn.innerHTML = '<i class="fas fa-times"></i> Failed';
+                btn.style.background = 'linear-gradient(135deg, #fa709a, #fee140)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 2000);
+                
+                showNotification('error', 'Failed to update meter: ' + error.message);
+            }
+        }
+
+        // DEACTIVATE METER
+        async function deactivateMeter() {
+            if (!confirm('Are you sure you want to deactivate this meter? This action can be reversed later.')) return;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/meters/${meterData.MeterID}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', 'Meter deactivated successfully');
+                    setTimeout(() => {
+                        window.location.href = 'meters.html';
+                    }, 1500);
+                }
+                
+            } catch (error) {
+                console.error('Error deactivating meter:', error);
+                showNotification('error', 'Failed to deactivate meter');
+            }
+        }
+
+        // UTILITY FUNCTIONS
+        function formatDateForInput(date) {
+            if (!date) return '';
+            return new Date(date).toISOString().split('T')[0];
+        }
+
+        function formatDateTime(date) {
+            if (!date) return 'N/A';
+            return new Date(date).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? '#fa709a' : '#4facfe'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 10000;
+                animation: slideInRight 0.5s ease-out;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.5s ease-out';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '../index.html';
+        }
+    </script>
+
+    <style>
+        .info-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-row span {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .info-row strong {
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4);
+        }
+    </style>
+</body>
+</html>

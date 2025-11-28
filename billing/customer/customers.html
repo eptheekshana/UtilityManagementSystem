@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Customers</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <!-- Include Sidebar (Same as dashboard) -->
+    <aside class="sidebar">
+        <!-- ... sidebar content ... -->
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar"><i class="fas fa-bars"></i></button>
+                <h1 class="page-title">Customer Management</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="openAddCustomerModal()">
+                    <i class="fas fa-plus"></i> Add Customer
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <!-- Filters -->
+            <div class="filter-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchCustomer" placeholder="Search customers...">
+                </div>
+                <select id="filterType" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Industrial">Industrial</option>
+                </select>
+                <select id="filterStatus" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Customers Table -->
+            <div class="table-container">
+                <table class="modern-table" id="customersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Customer</h2>
+                <span class="close" onclick="closeAddCustomerModal()">&times;</span>
+            </div>
+            <form id="addCustomerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" name="lastName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address *</label>
+                    <input type="text" name="address" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input type="text" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>State *</label>
+                        <input type="text" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Zip Code *</label>
+                        <input type="text" name="zipCode" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Customer Type *</label>
+                    <select name="customerType" required>
+                        <option value="">Select Type</option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Industrial">Industrial</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeAddCustomerModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/customers.js"></script>
+</body>
+</html>

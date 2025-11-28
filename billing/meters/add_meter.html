@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Register Meter</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="meters.html" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Meters</span>
+            </a>
+            <a href="readings.html" class="nav-item">
+                <i class="fas fa-book-reader"></i>
+                <span>Readings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Register New Meter</h1>
+            </div>
+            <div class="header-right">
+                <a href="meters.html" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <div class="form-card">
+                <div class="form-header">
+                    <i class="fas fa-plus-circle"></i>
+                    <h2>Meter Registration Form</h2>
+                </div>
+                
+                <form id="addMeterForm">
+                    
+                    <!-- Meter Identification -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-barcode"></i> Meter Identification</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Meter Number *</label>
+                                <input type="text" name="meterNumber" required placeholder="e.g., MTR-E-1001" pattern="[A-Z0-9-]+" title="Use uppercase letters, numbers, and hyphens only">
+                                <small>Format: MTR-[Type]-[Number] (e.g., MTR-E-1001)</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Meter Serial Number</label>
+                                <input type="text" name="serialNumber" placeholder="Manufacturer serial number">
+                                <small>Optional: Physical serial number from device</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Assignment -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-user-tag"></i> Customer Assignment</h3>
+                        <div class="form-group">
+                            <label>Select Customer *</label>
+                            <div class="customer-search-box">
+                                <input type="text" id="customerSearch" placeholder="Search customer by name, ID, or email..." autocomplete="off">
+                                <input type="hidden" name="customerId" id="selectedCustomerId" required>
+                            </div>
+                            <div id="customerDropdown" class="search-dropdown"></div>
+                            <div id="selectedCustomerInfo" class="selected-info" style="display: none;">
+                                <div class="info-badge">
+                                    <i class="fas fa-user-check"></i>
+                                    <span id="selectedCustomerName"></span>
+                                    <button type="button" class="clear-btn" onclick="clearCustomerSelection()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meter Type & Utility -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-cogs"></i> Meter Specifications</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Utility Type *</label>
+                                <select name="utilityType" id="utilityType" required>
+                                    <option value="">Select Utility Type</option>
+                                    <option value="Electricity">⚡ Electricity</option>
+                                    <option value="Water">💧 Water</option>
+                                    <option value="Gas">🔥 Gas</option>
+                                    <option value="Sewage">🚰 Sewage</option>
+                                </select>
+                                <small>Type of utility this meter will measure</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Meter Type *</label>
+                                <select name="meterType" required>
+                                    <option value="">Select Meter Type</option>
+                                    <option value="Analog">📊 Analog (Manual Reading)</option>
+                                    <option value="Digital">📱 Digital (Manual/Remote)</option>
+                                    <option value="Smart">🤖 Smart (Automatic IoT)</option>
+                                </select>
+                                <small>Technology type of the meter</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Manufacturer</label>
+                                <input type="text" name="manufacturer" placeholder="e.g., Siemens, ABB, Landis+Gyr">
+                            </div>
+                            <div class="form-group">
+                                <label>Model Number</label>
+                                <input type="text" name="modelNumber" placeholder="Manufacturer model">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Installation Details -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-calendar-alt"></i> Installation Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Installation Date *</label>
+                                <input type="date" name="installationDate" id="installationDate" required>
+                                <small>Date when meter was installed</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Installation Status</label>
+                                <select name="status">
+                                    <option value="Active" selected>✅ Active</option>
+                                    <option value="Inactive">⏸️ Inactive</option>
+                                    <option value="Maintenance">🔧 Maintenance</option>
+                                    <option value="Testing">🧪 Testing</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Initial Reading</label>
+                                <input type="number" name="initialReading" step="0.01" value="0" min="0">
+                                <small>Starting meter reading (usually 0 for new meters)</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Calibration Date</label>
+                                <input type="date" name="calibrationDate">
+                                <small>Last calibration/certification date</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location Information -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-map-marker-alt"></i> Location Information</h3>
+                        <div class="form-group">
+                            <label>Installation Location *</label>
+                            <input type="text" name="location" required placeholder="e.g., Front Yard, Basement, Main Panel">
+                            <small>Physical location where meter is installed</small>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>GPS Latitude</label>
+                                <input type="text" name="latitude" placeholder="e.g., 40.7128" pattern="-?\d+\.?\d*">
+                            </div>
+                            <div class="form-group">
+                                <label>GPS Longitude</label>
+                                <input type="text" name="longitude" placeholder="e.g., -74.0060" pattern="-?\d+\.?\d*">
+                                <button type="button" class="btn-icon" onclick="getCurrentLocation()" title="Get current location">
+                                    <i class="fas fa-crosshairs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Installation Notes</label>
+                            <textarea name="installationNotes" rows="3" placeholder="Any special notes about installation, accessibility, or location..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Technical Specifications -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-wrench"></i> Technical Specifications (Optional)</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Accuracy Class</label>
+                                <select name="accuracyClass">
+                                    <option value="">Select Class</option>
+                                    <option value="0.5">Class 0.5 (High Precision)</option>
+                                    <option value="1.0">Class 1.0 (Standard)</option>
+                                    <option value="2.0">Class 2.0 (Basic)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum Capacity</label>
+                                <input type="number" name="maxCapacity" step="0.01" placeholder="Maximum measurable units">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Communication Protocol</label>
+                                <select name="protocol">
+                                    <option value="">Not Applicable</option>
+                                    <option value="Modbus">Modbus RTU</option>
+                                    <option value="DLMS">DLMS/COSEM</option>
+                                    <option value="LoRaWAN">LoRaWAN</option>
+                                    <option value="WiFi">WiFi</option>
+                                    <option value="Cellular">Cellular (4G/5G)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Device ID / MAC Address</label>
+                                <input type="text" name="deviceId" placeholder="For smart meters">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warranty & Maintenance -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-shield-alt"></i> Warranty & Maintenance</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Warranty Expiry Date</label>
+                                <input type="date" name="warrantyExpiry">
+                            </div>
+                            <div class="form-group">
+                                <label>Next Maintenance Due</label>
+                                <input type="date" name="nextMaintenance">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="window.location.href='meters.html'">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Register Meter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let customersData = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCustomers();
+            setupForm();
+            
+            // Set default installation date to today
+            document.getElementById('installationDate').value = new Date().toISOString().split('T')[0];
+        });
+
+        // LOAD CUSTOMERS
+        async function loadCustomers() {
+            try {
+                const response = await fetch('http://localhost:3000/api/customers', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    customersData = result.data;
+                }
+                
+            } catch (error) {
+                console.error('Error loading customers:', error);
+            }
+        }
+
+        // SETUP FORM
+        function setupForm() {
+            const form = document.getElementById('addMeterForm');
+            const customerSearch = document.getElementById('customerSearch');
+            
+            // Customer search
+            customerSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm.length < 2) {
+                    document.getElementById('customerDropdown').innerHTML = '';
+                    return;
+                }
+                
+                const filtered = customersData.filter(c => 
+                    c.FirstName.toLowerCase().includes(searchTerm) ||
+                    c.LastName.toLowerCase().includes(searchTerm) ||
+                    c.Email.toLowerCase().includes(searchTerm) ||
+                    c.CustomerID.toString().includes(searchTerm)
+                );
+                
+                displayCustomerDropdown(filtered);
+            });
+            
+            // Form submit
+            form.addEventListener('submit', addMeter);
+            
+            // Auto-generate meter number based on utility type
+            document.getElementById('utilityType').addEventListener('change', function() {
+                const prefix = {
+                    'Electricity': 'MTR-E-',
+                    'Water': 'MTR-W-',
+                    'Gas': 'MTR-G-',
+                    'Sewage': 'MTR-S-'
+                };
+                
+                const meterNumber = document.querySelector('input[name="meterNumber"]');
+                if (!meterNumber.value && this.value) {
+                    const random = Math.floor(Math.random() * 9000) + 1000;
+                    meterNumber.value = prefix[this.value] + random;
+                }
+            });
+        }
+
+        

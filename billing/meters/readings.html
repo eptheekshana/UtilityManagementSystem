@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Meter Readings</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="meters.html" class="nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Meters</span>
+            </a>
+            <a href="readings.html" class="nav-item active">
+                <i class="fas fa-book-reader"></i>
+                <span>Readings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Meter Readings</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="openAddReadingModal()">
+                    <i class="fas fa-plus"></i> Add Reading
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- Reading Entry Form -->
+            <div class="reading-entry-card">
+                <h3><i class="fas fa-book"></i> Quick Reading Entry</h3>
+                <form id="quickReadingForm" class="quick-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Select Meter</label>
+                            <select name="meterId" id="meterSelect" required>
+                                <option value="">Choose a meter...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Current Reading</label>
+                            <input type="number" name="currentReading" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Reading Date</label>
+                            <input type="date" name="readingDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Method</label>
+                            <select name="readingMethod" required>
+                                <option value="Manual">Manual</option>
+                                <option value="Automatic">Automatic</option>
+                                <option value="Estimated">Estimated</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn-primary btn-block">
+                                <i class="fas fa-save"></i> Save Reading
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes (Optional)</label>
+                        <textarea name="notes" rows="2" placeholder="Add any notes about this reading..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Readings History -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Reading History</h3>
+                    <div class="filter-group">
+                        <select id="filterMeter" class="filter-select">
+                            <option value="">All Meters</option>
+                        </select>
+                        <select id="filterPeriod" class="filter-select">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                            <option value="365">Last year</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Reading ID</th>
+                            <th>Meter Number</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Previous</th>
+                            <th>Current</th>
+                            <th>Consumption</th>
+                            <th>Method</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="readingsTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/readings.js"></script>
+</body>
+</html>

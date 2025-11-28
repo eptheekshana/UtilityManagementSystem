@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Process Payment</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="payments.html" class="nav-item active">
+                <i class="fas fa-credit-card"></i>
+                <span>Process Payment</span>
+            </a>
+            <a href="history.html" class="nav-item">
+                <i class="fas fa-history"></i>
+                <span>Payment History</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Process Payment</h1>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <div class="payment-grid">
+                <!-- Search Bill Section -->
+                <div class="payment-card">
+                    <h3><i class="fas fa-search"></i> Find Bill</h3>
+                    <div class="form-group">
+                        <label>Search by Customer or Bill ID</label>
+                        <input type="text" id="billSearch" placeholder="Enter customer name or bill ID...">
+                    </div>
+                    
+                    <div id="billResults" class="bill-results">
+                        <!-- Dynamic bill search results -->
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <div class="payment-card">
+                    <h3><i class="fas fa-credit-card"></i> Payment Details</h3>
+                    
+                    <div id="selectedBillInfo" class="bill-info-box" style="display: none;">
+                        <div class="info-row">
+                            <span>Bill ID:</span>
+                            <strong id="displayBillId">-</strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Customer:</span>
+                            <strong id="displayCustomer">-</strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Total Amount:</span>
+                            <strong id="displayTotal">$0.00</strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Outstanding:</span>
+                            <strong class="text-danger" id="displayOutstanding">$0.00</strong>
+                        </div>
+                    </div>
+
+                    <form id="paymentForm" style="display: none;">
+                        <input type="hidden" id="billingId" name="billingId">
+                        
+                        <div class="form-group">
+                            <label>Payment Amount *</label>
+                            <input type="number" id="amountPaid" name="amountPaid" step="0.01" required>
+                            <small>Maximum: $<span id="maxAmount">0.00</span></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Payment Method *</label>
+                            <select name="paymentMethod" id="paymentMethod" required>
+                                <option value="">Select Method</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Card">Credit/Debit Card</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Mobile Money">Mobile Money</option>
+                                <option value="Cheque">Cheque</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="transactionRefGroup" style="display: none;">
+                            <label>Transaction Reference</label>
+                            <input type="text" name="transactionReference" placeholder="Enter transaction/cheque number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notes (Optional)</label>
+                            <textarea name="notes" rows="3" placeholder="Add any notes..."></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="resetPaymentForm()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-check"></i> Process Payment
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="noSelectMessage" class="info-message">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Please select a bill to process payment</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../assets/js/payments.js"></script>
+</body>
+</html>

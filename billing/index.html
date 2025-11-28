@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Login</title>
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles">
+        <span style="--i:11"></span>
+        <span style="--i:12"></span>
+        <span style="--i:24"></span>
+        <span style="--i:10"></span>
+        <span style="--i:14"></span>
+        <span style="--i:23"></span>
+        <span style="--i:18"></span>
+        <span style="--i:16"></span>
+        <span style="--i:19"></span>
+        <span style="--i:20"></span>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="login-box">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo-circle">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h1 class="system-title">Utility Management System</h1>
+                <p class="system-subtitle">Smart. Efficient. Reliable.</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Username" required>
+                    <label>Username</label>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <label>Password</label>
+                    <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-user-tag"></i>
+                    <select id="role" required>
+                        <option value="">Select Role</option>
+                        <option value="admin">Administrator</option>
+                        <option value="meter_reader">Meter Reader</option>
+                        <option value="billing_clerk">Billing Clerk</option>
+                        <option value="manager">Manager</option>
+                    </select>
+                    <label>Role</label>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span>Login</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="social-btn google">
+                        <i class="fab fa-google"></i>
+                    </button>
+                    <button type="button" class="social-btn microsoft">
+                        <i class="fab fa-microsoft"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p>&copy; 2024 UMS. All rights reserved.</p>
+            </div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="info-cards">
+            <div class="info-card" style="--delay: 0.1s">
+                <i class="fas fa-users"></i>
+                <h3>50K+</h3>
+                <p>Active Customers</p>
+            </div>
+            <div class="info-card" style="--delay: 0.2s">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>75K+</h3>
+                <p>Meters Managed</p>
+            </div>
+            <div class="info-card" style="--delay: 0.3s">
+                <i class="fas fa-chart-line"></i>
+                <h3>99.9%</h3>
+                <p>Uptime</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>

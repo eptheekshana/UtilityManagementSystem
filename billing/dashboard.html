@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Dashboard</title>
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <!-- Admin Menu -->
+            <div class="nav-section" data-role="admin">
+                <p class="nav-title">MANAGEMENT</p>
+                <a href="customers/customers.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="meters/meters.html" class="nav-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Meters</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Tariffs</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Complaints</span>
+                </a>
+            </div>
+
+            <!-- Meter Reader Menu -->
+            <div class="nav-section" data-role="meter_reader">
+                <p class="nav-title">READINGS</p>
+                <a href="meters/readings.html" class="nav-item">
+                    <i class="fas fa-book-reader"></i>
+                    <span>Add Readings</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Reading History</span>
+                </a>
+            </div>
+
+            <!-- Billing Clerk Menu -->
+            <div class="nav-section" data-role="billing_clerk">
+                <p class="nav-title">BILLING</p>
+                <a href="billing/generate_bill.html" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Generate Bills</span>
+                </a>
+                <a href="billing/bills.html" class="nav-item">
+                    <i class="fas fa-receipt"></i>
+                    <span>View Bills</span>
+                </a>
+                <a href="payments/payments.html" class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+            </div>
+
+            <!-- Manager Menu -->
+            <div class="nav-section" data-role="manager">
+                <p class="nav-title">REPORTS</p>
+                <a href="reports/revenue.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Revenue</span>
+                </a>
+                <a href="reports/defaulters.html" class="nav-item">
+                    <i class="fas fa-user-slash"></i>
+                    <span>Defaulters</span>
+                </a>
+                <a href="reports/usage.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Usage Statistics</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                
+                <div class="user-menu">
+                    <img src="assets/images/avatar.png" alt="User" class="user-avatar">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Admin User</span>
+                        <span class="user-role" id="userRole">Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-container">
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 class="stat-value" id="totalCustomers">0</h3>
+                        <p class="stat-label">Total Customers</p>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>12% from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card green">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 class="stat-value" id="totalRevenue">$0</h3>
+                        <p class="stat-label">Monthly Revenue</p>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>8% from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card orange">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 class="stat-value" id="pendingBills">0</h3>
+                        <p class="stat-label">Pending Bills</p>
+                        <div class="stat-trend negative">
+                            <i class="fas fa-arrow-down"></i>
+                            <span>5% from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card red">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 class="stat-value" id="defaulters">0</h3>
+                        <p class="stat-label">Defaulters</p>
+                        <div class="stat-trend negative">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>3% from last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <!-- Revenue Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Revenue Overview</h3>
+                        <select class="chart-filter">
+                            <option>Last 6 Months</option>
+                            <option>Last Year</option>
+                            <option>All Time</option>
+                        </select>
+                    </div>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <!-- Consumption Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Utility Consumption</h3>
+                        <select class="chart-filter">
+                            <option>This Month</option>
+                            <option>Last Month</option>
+                            <option>This Year</option>
+                        </select>
+                    </div>
+                    <canvas id="consumptionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tables and Progress -->
+            <div class="info-row">
+                
+                <!-- Recent Payments Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Recent Payments</h3>
+                        <a href="payments/history.html" class="view-all">View All</a>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentPayments">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Meter Status -->
+                <div class="progress-card">
+                    <h3>Meter Status Distribution</h3>
+                    <div class="progress-item">
+                        <div class="progress-info">
+                            <span>Active Meters</span>
+                            <span class="progress-value">75%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%; background: #4facfe;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-info">
+                            <span>Inactive Meters</span>
+                            <span class="progress-value">15%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 15%; background: #fa709a;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-info">
+                            <span>Maintenance</span>
+                            <span class="progress-value">10%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 10%; background: #fee140;"></div>
+                        </div>
+                    </div>
+
+                    <canvas id="meterStatusChart" style="margin-top: 20px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="window.location.href='customers/add_customer.html'">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Customer</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='meters/add_meter.html'">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Register Meter</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='billing/generate_bill.html'">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Generate Bill</span>
+                    </button>
+                    <button class="action-btn" onclick="window.location.href='payments/payments.html'">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Record Payment</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

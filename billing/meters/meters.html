@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Meters</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="../customers/customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Customers</span>
+            </a>
+            <a href="meters.html" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Meters</span>
+            </a>
+            <a href="readings.html" class="nav-item">
+                <i class="fas fa-book-reader"></i>
+                <span>Readings</span>
+            </a>
+            <a href="../billing/bills.html" class="nav-item">
+                <i class="fas fa-file-invoice"></i>
+                <span>Billing</span>
+            </a>
+            <a href="../payments/payments.html" class="nav-item">
+                <i class="fas fa-credit-card"></i>
+                <span>Payments</span>
+            </a>
+            <a href="../reports/revenue.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Meter Management</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="openAddMeterModal()">
+                    <i class="fas fa-plus"></i> Register Meter
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- Stats Cards -->
+            <div class="stats-mini-grid">
+                <div class="stat-mini-card blue">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="totalMeters">0</h4>
+                        <p>Total Meters</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card green">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="activeMeters">0</h4>
+                        <p>Active</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card orange">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="maintenanceMeters">0</h4>
+                        <p>Maintenance</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card red">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="faultyMeters">0</h4>
+                        <p>Faulty</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchMeter" placeholder="Search by meter number or customer...">
+                </div>
+                <select id="filterUtilityType" class="filter-select">
+                    <option value="">All Utilities</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Water">Water</option>
+                    <option value="Gas">Gas</option>
+                    <option value="Sewage">Sewage</option>
+                </select>
+                <select id="filterMeterType" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="Analog">Analog</option>
+                    <option value="Digital">Digital</option>
+                    <option value="Smart">Smart</option>
+                </select>
+                <select id="filterStatus" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Faulty">Faulty</option>
+                </select>
+            </div>
+
+            <!-- Meters Grid View -->
+            <div class="view-toggle">
+                <button class="toggle-btn active" onclick="toggleView('grid')">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button class="toggle-btn" onclick="toggleView('table')">
+                    <i class="fas fa-list"></i> Table
+                </button>
+            </div>
+
+            <!-- Grid View -->
+            <div id="gridView" class="meters-grid">
+                <!-- Dynamic content -->
+            </div>
+
+            <!-- Table View -->
+            <div id="tableView" class="table-container" style="display: none;">
+                <table class="modern-table" id="metersTable">
+                    <thead>
+                        <tr>
+                            <th>Meter ID</th>
+                            <th>Meter Number</th>
+                            <th>Customer</th>
+                            <th>Utility Type</th>
+                            <th>Meter Type</th>
+                            <th>Install Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metersTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Meter Modal -->
+    <div id="addMeterModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Register New Meter</h2>
+                <span class="close" onclick="closeAddMeterModal()">&times;</span>
+            </div>
+            <form id="addMeterForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Meter Number *</label>
+                        <input type="text" name="meterNumber" required placeholder="e.g., MTR-2024-001">
+                    </div>
+                    <div class="form-group">
+                        <label>Customer *</label>
+                        <select name="customerId" id="customerSelect" required>
+                            <option value="">Select Customer</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Utility Type *</label>
+                        <select name="utilityType" required>
+                            <option value="">Select Utility</option>
+                            <option value="Electricity">Electricity</option>
+                            <option value="Water">Water</option>
+                            <option value="Gas">Gas</option>
+                            <option value="Sewage">Sewage</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Meter Type *</label>
+                        <select name="meterType" required>
+                            <option value="">Select Type</option>
+                            <option value="Analog">Analog</option>
+                            <option value="Digital">Digital</option>
+                            <option value="Smart">Smart</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Installation Date *</label>
+                        <input type="date" name="installationDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Reading</label>
+                        <input type="number" name="initialReading" step="0.01" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Location *</label>
+                    <input type="text" name="location" required placeholder="e.g., Front yard, Basement">
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Maintenance">Maintenance</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeAddMeterModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Register Meter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Meter Details Modal -->
+    <div id="meterDetailsModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> Meter Details</h2>
+                <span class="close" onclick="closeMeterDetailsModal()">&times;</span>
+            </div>
+            <div id="meterDetailsContent">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/meters.js"></script>
+</body>
+</html>
