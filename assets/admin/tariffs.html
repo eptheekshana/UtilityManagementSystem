@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Tariff Management</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <p class="nav-title">ADMINISTRATION</p>
+            <a href="users.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span>User Management</span>
+            </a>
+            <a href="tariffs.html" class="nav-item active">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Tariff Plans</span>
+            </a>
+            <a href="complaints.html" class="nav-item">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Complaints</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Tariff Management</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" onclick="openAddTariffModal()">
+                    <i class="fas fa-plus"></i> Add Tariff Plan
+                </button>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- Alert Info -->
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Tariff Management</strong><br>
+                    Configure billing rates for different utility types and customer categories. Active tariffs are automatically applied to new bills.
+                </div>
+            </div>
+
+            <!-- Current Active Tariffs -->
+            <div class="tariff-grid">
+                <div class="tariff-category-card">
+                    <div class="category-header electricity">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Electricity</h3>
+                    </div>
+                    <div class="tariff-items" id="electricityTariffs">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <div class="tariff-category-card">
+                    <div class="category-header water">
+                        <i class="fas fa-tint"></i>
+                        <h3>Water</h3>
+                    </div>
+                    <div class="tariff-items" id="waterTariffs">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <div class="tariff-category-card">
+                    <div class="category-header gas">
+                        <i class="fas fa-fire"></i>
+                        <h3>Gas</h3>
+                    </div>
+                    <div class="tariff-items" id="gasTariffs">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <div class="tariff-category-card">
+                    <div class="category-header sewage">
+                        <i class="fas fa-recycle"></i>
+                        <h3>Sewage</h3>
+                    </div>
+                    <div class="tariff-items" id="sewageTariffs">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Tariffs Table -->
+            <div class="table-card" style="margin-top: 30px;">
+                <div class="table-header">
+                    <h3>All Tariff Plans</h3>
+                    <div class="filter-group">
+                        <select id="filterUtility" class="filter-select">
+                            <option value="">All Utilities</option>
+                            <option value="Electricity">Electricity</option>
+                            <option value="Water">Water</option>
+                            <option value="Gas">Gas</option>
+                            <option value="Sewage">Sewage</option>
+                        </select>
+                        <select id="filterCustomerType" class="filter-select">
+                            <option value="">All Customer Types</option>
+                            <option value="Residential">Residential</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Industrial">Industrial</option>
+                        </select>
+                        <select id="filterActive" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Tariff ID</th>
+                            <th>Utility Type</th>
+                            <th>Customer Type</th>
+                            <th>Rate/Unit</th>
+                            <th>Min. Charge</th>
+                            <th>Effective From</th>
+                            <th>Effective To</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tariffsTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Tariff Modal -->
+    <div id="addTariffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Tariff Plan</h2>
+                <span class="close" onclick="closeAddTariffModal()">&times;</span>
+            </div>
+            <form id="addTariffForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Utility Type *</label>
+                        <select name="utilityType" required>
+                            <option value="">Select Utility</option>
+                            <option value="Electricity">⚡ Electricity</option>
+                            <option value="Water">💧 Water</option>
+                            <option value="Gas">🔥 Gas</option>
+                            <option value="Sewage">🚰 Sewage</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Type *</label>
+                        <select name="customerType" required>
+                            <option value="">Select Type</option>
+                            <option value="Residential">🏠 Residential</option>
+                            <option value="Commercial">🏢 Commercial</option>
+                            <option value="Industrial">🏭 Industrial</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rate per Unit ($) *</label>
+                        <input type="number" name="ratePerUnit" step="0.0001" required min="0" placeholder="0.0000">
+                        <small>Cost per unit of consumption</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Charge ($)</label>
+                        <input type="number" name="minimumCharge" step="0.01" value="0" min="0" placeholder="0.00">
+                        <small>Minimum bill amount (optional)</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Effective From *</label>
+                        <input type="date" name="effectiveFrom" required>
+                        <small>Date when this tariff becomes active</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Effective To</label>
+                        <input type="date" name="effectiveTo">
+                        <small>Optional: Leave blank for indefinite</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description / Notes</label>
+                    <textarea name="description" rows="3" placeholder="Optional: Add any notes about this tariff plan..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="isActive" checked>
+                        <span>Set as Active immediately</span>
+                    </label>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeAddTariffModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Tariff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Tariff Modal -->
+    <div id="editTariffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Edit Tariff Plan</h2>
+                <span class="close" onclick="closeEditTariffModal()">&times;</span>
+            </div>
+            <form id="editTariffForm">
+                <input type="hidden" id="editTariffId" name="tariffId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Utility Type</label>
+                        <input type="text" id="editUtilityType" readonly style="background: #f0f0f0;">
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Type</label>
+                        <input type="text" id="editCustomerType" readonly style="background: #f0f0f0;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rate per Unit ($) *</label>
+                        <input type="number" id="editRatePerUnit" name="ratePerUnit" step="0.0001" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Charge ($)</label>
+                        <input type="number" id="editMinimumCharge" name="minimumCharge" step="0.01" min="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Effective From *</label>
+                        <input type="date" id="editEffectiveFrom" name="effectiveFrom" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Effective To</label>
+                        <input type="date" id="editEffectiveTo" name="effectiveTo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editIsActive" name="isActive">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeEditTariffModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Update Tariff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let tariffsData = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTariffs();
+            setupFilters();
+            setupForms();
+        });
+
+        async function loadTariffs() {
+            try {
+                const response = await fetch('http://localhost:3000/api/tariffs', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    tariffsData = result.data;
+                    displayTariffCards();
+                    displayTariffsTable(tariffsData);
+                }
+                
+            } catch (error) {
+                console.error('Error loading tariffs:', error);
+            }
+        }
+
+        function displayTariffCards() {
+            const utilities = ['Electricity', 'Water', 'Gas', 'Sewage'];
+            
+            utilities.forEach(utility => {
+                const container = document.getElementById(`${utility.toLowerCase()}Tariffs`);
+                const utilityTariffs = tariffsData.filter(t => t.UtilityType === utility && t.IsActive);
+                
+                container.innerHTML = '';
+                
+                if (utilityTariffs.length === 0) {
+                    container.innerHTML = '<p class="no-tariffs">No active tariffs</p>';
+                    return;
+                }
+                
+                utilityTariffs.forEach(tariff => {
+                    const item = document.createElement('div');
+                    item.className = 'tariff-item';
+                    item.innerHTML = `
+                        <div class="tariff-type">${tariff.CustomerType}</div>
+                        <div class="tariff-rate">$${parseFloat(tariff.RatePerUnit).toFixed(4)}<span>/unit</span></div>
+                        <div class="tariff-min">Min: $${parseFloat(tariff.MinimumCharge).toFixed(2)}</div>
+                        <div class="tariff-date">From: ${formatDate(tariff.EffectiveFrom)}</div>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        function displayTariffsTable(tariffs) {
+            const tbody = document.getElementById('tariffsTableBody');
+            tbody.innerHTML = '';
+            
+            tariffs.forEach(tariff => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${tariff.TariffID}</td>
+                    <td><span class="badge badge-${tariff.UtilityType.toLowerCase()}">${tariff.UtilityType}</span></td>
+                    <td><span class="badge badge-${tariff.CustomerType.toLowerCase()}">${tariff.CustomerType}</span></td>
+                    <td><strong>$${parseFloat(tariff.RatePerUnit).toFixed(4)}</strong></td>
+                    <td>$${parseFloat(tariff.MinimumCharge).toFixed(2)}</td>
+                    <td>${formatDate(tariff.EffectiveFrom)}</td>
+                    <td>${tariff.EffectiveTo ? formatDate(tariff.EffectiveTo) : 'Indefinite'}</td>
+                    <td><span class="status-badge ${tariff.IsActive ? 'active' : 'inactive'}">${tariff.IsActive ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button class="btn-icon" onclick="editTariff(${tariff.TariffID})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon ${tariff.IsActive ? 'danger' : ''}" onclick="toggleTariffStatus(${tariff.TariffID}, ${tariff.IsActive})" title="${tariff.IsActive ? 'Deactivate' : 'Activate'}">
+                            <i class="fas fa-${tariff.IsActive ? 'toggle-on' : 'toggle-off'}"></i>
+                        </button>
+                        <button class="btn-icon danger" onclick="deleteTariff(${tariff.TariffID})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function setupFilters() {
+            document.getElementById('filterUtility').addEventListener('change', filterTariffs);
+            document.getElementById('filterCustomerType').addEventListener('change', filterTariffs);
+            document.getElementById('filterActive').addEventListener('change', filterTariffs);
+        }
+
+        function filterTariffs() {
+            const utilityFilter = document.getElementById('filterUtility').value;
+            const customerTypeFilter = document.getElementById('filterCustomerType').value;
+            const activeFilter = document.getElementById('filterActive').value;
+            
+            let filtered = tariffsData;
+            
+            if (utilityFilter) {
+                filtered = filtered.filter(t => t.UtilityType === utilityFilter);
+            }
+            
+            if (customerTypeFilter) {
+                filtered = filtered.filter(t => t.CustomerType === customerTypeFilter);
+            }
+            
+            if (activeFilter !== '') {
+                filtered = filtered.filter(t => t.IsActive == activeFilter);
+            }
+            
+            displayTariffsTable(filtered);
+        }
+
+        function setupForms() {
+            document.getElementById('addTariffForm').addEventListener('submit', addTariff);
+            document.getElementById('editTariffForm').addEventListener('submit', updateTariff);
+        }
+
+        async function addTariff(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const tariffData = {
+                utilityType: formData.get('utilityType'),
+                customerType: formData.get('customerType'),
+                ratePerUnit: parseFloat(formData.get('ratePerUnit')),
+                minimumCharge: parseFloat(formData.get('minimumCharge') || 0),
+                effectiveFrom: formData.get('effectiveFrom'),
+                effectiveTo: formData.get('effectiveTo') || null,
+                isActive: formData.get('isActive') ? 1 : 0
+            };
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/tariffs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(tariffData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', 'Tariff plan created successfully');
+                    closeAddTariffModal();
+                    loadTariffs();
+                }
+                
+            } catch (error) {
+                console.error('Error adding tariff:', error);
+                showNotification('error', 'Failed to create tariff plan');
+            }
+        }
+
+        function editTariff(tariffId) {
+            const tariff = tariffsData.find(t => t.TariffID === tariffId);
+            if (!tariff) return;
+            
+            document.getElementById('editTariffId').value = tariff.TariffID;
+            document.getElementById('editUtilityType').value = tariff.UtilityType;
+            document.getElementById('editCustomerType').value = tariff.CustomerType;
+            document.getElementById('editRatePerUnit').value = tariff.RatePerUnit;
+            document.getElementById('editMinimumCharge').value = tariff.MinimumCharge;
+            document.getElementById('editEffectiveFrom').value = formatDateForInput(tariff.EffectiveFrom);
+            document.getElementById('editEffectiveTo').value = tariff.EffectiveTo ? formatDateForInput(tariff.EffectiveTo) : '';
+            document.getElementById('editIsActive').value = tariff.IsActive ? '1' : '0';
+            
+            document.getElementById('editTariffModal').style.display = 'flex';
+        }
+
+        async function updateTariff(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const tariffData = {
+                ratePerUnit: parseFloat(formData.get('ratePerUnit')),
+                minimumCharge: parseFloat(formData.get('minimumCharge')),
+                effectiveFrom: formData.get('effectiveFrom'),
+                effectiveTo: formData.get('effectiveTo') || null,
+                isActive: parseInt(formData.get('isActive'))
+            };
+            
+            const tariffId = formData.get('tariffId');
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/tariffs/${tariffId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(tariffData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', 'Tariff plan updated successfully');
+                    closeEditTariffModal();
+                    loadTariffs();
+                }
+                
+            } catch (error) {
+                console.error('Error updating tariff:', error);
+                showNotification('error', 'Failed to update tariff plan');
+            }
+        }
+
+        async function toggleTariffStatus(tariffId, currentStatus) {
+            const action = currentStatus ? 'deactivate' : 'activate';
+            if (!confirm(`Are you sure you want to ${action} this tariff?`)) return;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/tariffs/${tariffId}/toggle`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', `Tariff ${action}d successfully`);
+                    loadTariffs();
+                }
+                
+            } catch (error) {
+                console.error('Error toggling tariff:', error);
+                showNotification('error', 'Failed to update tariff status');
+            }
+        }
+
+        async function deleteTariff(tariffId) {
+            if (!confirm('Are you sure you want to delete this tariff? This action cannot be undone.')) return;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/tariffs/${tariffId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', 'Tariff deleted successfully');
+                    loadTariffs();
+                }
+                
+            } catch (error) {
+                console.error('Error deleting tariff:', error);
+                showNotification('error', 'Failed to delete tariff');
+            }
+        }
+
+        function openAddTariffModal() {
+            document.getElementById('addTariffModal').style.display = 'flex';
+        }
+
+        function closeAddTariffModal() {
+            document.getElementById('addTariffModal').style.display = 'none';
+            document.getElementById('addTariffForm').reset();
+        }
+
+        function closeEditTariffModal() {
+            document.getElementById('editTariffModal').style.display = 'none';
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatDateForInput(date) {
+            return new Date(date).toISOString().split('T')[0];
+        }
+
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? '#fa709a' : '#4facfe'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 10000;
+                animation: slideInRight 0.5s ease-out;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.5s ease-out';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '../index.html';
+        }
+    </script>
+
+    <style>
+        .tariff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .tariff-category-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .category-header {
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-header.electricity {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .category-header.water {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .category-header.gas {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .category-header.sewage {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .category-header i {
+            font-size: 24px;
+        }
+
+        .category-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .tariff-items {
+            padding: 15px;
+        }
+
+        .tariff-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tariff-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tariff-type {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .tariff-rate {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .tariff-rate span {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .tariff-min,
+        .tariff-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .no-tariffs {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+    </style>
+</body>
+</html>

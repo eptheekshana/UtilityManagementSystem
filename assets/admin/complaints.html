@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMS - Complaints Management</title>
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>UMS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <p class="nav-title">ADMINISTRATION</p>
+            <a href="users.html" class="nav-item">
+                <i class="fas fa-users-cog"></i>
+                <span>User Management</span>
+            </a>
+            <a href="tariffs.html" class="nav-item">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Tariff Plans</span>
+            </a>
+            <a href="complaints.html" class="nav-item active">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Complaints</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Complaints Management</h1>
+            </div>
+        </header>
+
+        <div class="page-container">
+            
+            <!-- Statistics -->
+            <div class="stats-mini-grid">
+                <div class="stat-mini-card red">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="criticalCount">0</h4>
+                        <p>Critical</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card orange">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="openCount">0</h4>
+                        <p>Open</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card blue">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="inProgressCount">0</h4>
+                        <p>In Progress</p>
+                    </div>
+                </div>
+                <div class="stat-mini-card green">
+                    <div class="stat-mini-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-mini-info">
+                        <h4 id="resolvedCount">0</h4>
+                        <p>Resolved</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchComplaint" placeholder="Search complaints...">
+                </div>
+                <select id="filterType" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="Billing">Billing</option>
+                    <option value="Meter">Meter</option>
+                    <option value="Service">Service</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="filterStatus" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Closed">Closed</option>
+                </select>
+                <select id="filterPriority" class="filter-select">
+                    <option value="">All Priorities</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+
+            <!-- Complaints List -->
+            <div class="complaints-grid">
+                <div id="complaintsContainer">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- View/Edit Complaint Modal -->
+    <div id="complaintModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-ticket-alt"></i> Complaint Details</h2>
+                <span class="close" onclick="closeComplaintModal()">&times;</span>
+            </div>
+            
+            <div class="complaint-details">
+                <!-- Customer Info -->
+                <div class="detail-section">
+                    <h3><i class="fas fa-user"></i> Customer Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Customer Name:</label>
+                            <span id="detailCustomerName">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email:</label>
+                            <span id="detailEmail">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Phone:</label>
+                            <span id="detailPhone">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Customer ID:</label>
+                            <span id="detailCustomerId">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complaint Info -->
+                <div class="detail-section">
+                    <h3><i class="fas fa-info-circle"></i> Complaint Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Complaint ID:</label>
+                            <span id="detailComplaintId">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Type:</label>
+                            <span id="detailType">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Priority:</label>
+                            <span id="detailPriority">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Submitted:</label>
+                            <span id="detailSubmittedDate">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item full-width">
+                        <label>Description:</label>
+                        <p id="detailDescription" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">-</p>
+                    </div>
+                </div>
+
+                <!-- Update Form -->
+                <form id="updateComplaintForm">
+                    <input type="hidden" id="updateComplaintId">
+                    
+                    <div class="detail-section">
+                        <h3><i class="fas fa-tasks"></i> Update Status</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Status *</label>
+                                <select id="updateStatus" name="status" required>
+                                    <option value="Open">Open</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Resolved">Resolved</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority</label>
+                                <select id="updatePriority" name="priority">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Assign To</label>
+                            <select id="updateAssignedTo" name="assignedTo">
+                                <option value="">Unassigned</option>
+                                <!-- Dynamic user list -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Resolution Notes</label>
+                            <textarea id="updateResolution" name="resolution" rows="4" placeholder="Enter resolution details..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeComplaintModal()">Close</button>
+                        <button type="button" class="btn-primary" onclick="notifyCustomer()">
+                            <i class="fas fa-envelope"></i> Notify Customer
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let complaintsData = [];
+        let usersData = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadComplaints();
+            loadUsers();
+            setupFilters();
+            setupForm();
+        });
+
+        async function loadComplaints() {
+            try {
+                const response = await fetch('http://localhost:3000/api/complaints', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    complaintsData = result.data;
+                    updateStats();
+                    displayComplaints(complaintsData);
+                }
+                
+            } catch (error) {
+                console.error('Error loading complaints:', error);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('http://localhost:3000/api/users', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    usersData = result.data;
+                    populateUserDropdown();
+                }
+                
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function populateUserDropdown() {
+            const select = document.getElementById('updateAssignedTo');
+            usersData.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.UserID;
+                option.textContent = `${user.FullName} (${user.Role})`;
+                select.appendChild(option);
+            });
+        }
+
+        function updateStats() {
+            const critical = complaintsData.filter(c => c.Priority === 'Critical' && c.Status !== 'Closed').length;
+            const open = complaintsData.filter(c => c.Status === 'Open').length;
+            const inProgress = complaintsData.filter(c => c.Status === 'In Progress').length;
+            const resolved = complaintsData.filter(c => c.Status === 'Resolved').length;
+            
+            document.getElementById('criticalCount').textContent = critical;
+            document.getElementById('openCount').textContent = open;
+            document.getElementById('inProgressCount').textContent = inProgress;
+            document.getElementById('resolvedCount').textContent = resolved;
+        }
+
+        function displayComplaints(complaints) {
+            const container = document.getElementById('complaintsContainer');
+            container.innerHTML = '';
+            
+            if (complaints.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle" style="color: #11998e;"></i>
+                        <h3>No Complaints</h3>
+                        <p>Great! All complaints have been resolved.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            complaints.forEach(complaint => {
+                const card = document.createElement('div');
+                card.className = 'complaint-card';
+                card.innerHTML = `
+                    <div class="complaint-header">
+                        <div class="complaint-id">#${complaint.ComplaintID}</div>
+                        <span class="priority-badge ${complaint.Priority.toLowerCase()}">${complaint.Priority}</span>
+                    </div>
+                    <div class="complaint-type">
+                        <i class="fas fa-${getTypeIcon(complaint.ComplaintType)}"></i>
+                        ${complaint.ComplaintType}
+                    </div>
+                    <div class="complaint-description">
+                        ${truncate(complaint.Description, 100)}
+                    </div>
+                    <div class="complaint-customer">
+                        <i class="fas fa-user"></i>
+                        ${complaint.CustomerName}
+                    </div>
+                    <div class="complaint-footer">
+                        <div class="complaint-date">
+                            <i class="fas fa-clock"></i>
+                            ${formatDate(complaint.SubmittedDate)}
+                        </div>
+                        <span class="status-badge ${complaint.Status.toLowerCase().replace(' ', '-')}">${complaint.Status}</span>
+                    </div>
+                    <button class="complaint-view-btn" onclick="viewComplaint(${complaint.ComplaintID})">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function setupFilters() {
+            document.getElementById('searchComplaint').addEventListener('input', filterComplaints);
+            document.getElementById('filterType').addEventListener('change', filterComplaints);
+            document.getElementById('filterStatus').addEventListener('change', filterComplaints);
+            document.getElementById('filterPriority').addEventListener('change', filterComplaints);
+        }
+
+        function filterComplaints() {
+            const searchTerm = document.getElementById('searchComplaint').value.toLowerCase();
+            const typeFilter = document.getElementById('filterType').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const priorityFilter = document.getElementById('filterPriority').value;
+            
+            let filtered = complaintsData;
+            
+            if (searchTerm) {
+                filtered = filtered.filter(c => 
+                    c.Description.toLowerCase().includes(searchTerm) ||
+                    c.CustomerName.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (typeFilter) {
+                filtered = filtered.filter(c => c.ComplaintType === typeFilter);
+            }
+            
+            if (statusFilter) {
+                filtered = filtered.filter(c => c.Status === statusFilter);
+            }
+            
+            if (priorityFilter) {
+                filtered = filtered.filter(c => c.Priority === priorityFilter);
+            }
+            
+            displayComplaints(filtered);
+        }
+
+        function viewComplaint(complaintId) {
+            const complaint = complaintsData.find(c => c.ComplaintID === complaintId);
+            if (!complaint) return;
+            
+            // Populate details
+            document.getElementById('detailCustomerName').textContent = complaint.CustomerName;
+            document.getElementById('detailEmail').textContent = complaint.Email || 'N/A';
+            document.getElementById('detailPhone').textContent = complaint.Phone || 'N/A';
+            document.getElementById('detailCustomerId').textContent = complaint.CustomerID;
+            
+            document.getElementById('detailComplaintId').textContent = complaint.ComplaintID;
+            document.getElementById('detailType').textContent = complaint.ComplaintType;
+            document.getElementById('detailPriority').innerHTML = `<span class="priority-badge ${complaint.Priority.toLowerCase()}">${complaint.Priority}</span>`;
+            document.getElementById('detailSubmittedDate').textContent = formatDateTime(complaint.SubmittedDate);
+            document.getElementById('detailDescription').textContent = complaint.Description;
+            
+            // Populate form
+            document.getElementById('updateComplaintId').value = complaint.ComplaintID;
+            document.getElementById('updateStatus').value = complaint.Status;
+            document.getElementById('updatePriority').value = complaint.Priority;
+            document.getElementById('updateAssignedTo').value = complaint.AssignedTo || '';
+            document.getElementById('updateResolution').value = complaint.Resolution || '';
+            
+            document.getElementById('complaintModal').style.display = 'flex';
+        }
+
+        function setupForm() {
+            document.getElementById('updateComplaintForm').addEventListener('submit', updateComplaint);
+        }
+
+        async function updateComplaint(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const complaintData = {
+                status: formData.get('status'),
+                priority: formData.get('priority'),
+                assignedTo: formData.get('assignedTo') || null,
+                resolution: formData.get('resolution')
+            };
+            
+            const complaintId = document.getElementById('updateComplaintId').value;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/complaints/${complaintId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(complaintData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', 'Complaint updated successfully');
+                    closeComplaintModal();
+                    loadComplaints();
+                }
+                
+            } catch (error) {
+                console.error('Error updating complaint:', error);
+                showNotification('error', 'Failed to update complaint');
+            }
+        }
+
+        async function notifyCustomer() {
+            const complaintId = document.getElementById('updateComplaintId').value;
+            
+            if (!confirm('Send status update to customer via email?')) return;
+            
+            try {
+                const response = await fetch(`http://localhost:3000/api/complaints/${complaintId}/notify`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('success', 'Customer notified successfully');
+                }
+                
+            } catch (error) {
+                console.error('Error notifying customer:', error);
+                showNotification('error', 'Failed to send notification');
+            }
+        }
+
+        function closeComplaintModal() {
+            document.getElementById('complaintModal').style.display = 'none';
+        }
+
+        function getTypeIcon(type) {
+            const icons = {
+                'Billing': 'file-invoice-dollar',
+                'Meter': 'tachometer-alt',
+                'Service': 'tools',
+                'Other': 'question-circle'
+            };
+            return icons[type] || 'ticket-alt';
+        }
+
+        function truncate(str, length) {
+            return str.length > length ? str.substring(0, length) + '...' : str;
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function formatDateTime(date) {
+            return new Date(date).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? '#fa709a' : '#4facfe'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 10000;
+                animation: slideInRight 0.5s ease-out;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.5s ease-out';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '../index.html';
+        }
+    </script>
+
+    <style>
+        .complaints-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .complaint-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .complaint-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .complaint-id {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .priority-badge {
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-badge.critical {
+            background: #fee;
+            color: #c00;
+        }
+
+        .priority-badge.high {
+            background: #ffe;
+            color: #c60;
+        }
+
+        .priority-badge.medium {
+            background: #eef;
+            color: #06c;
+        }
+
+        .priority-badge.low {
+            background: #efe;
+            color: #0c6;
+        }
+
+        .complaint-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .complaint-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .complaint-customer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .complaint-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            margin-bottom: 15px;
+        }
+
+        .complaint-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .complaint-view-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .complaint-view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .detail-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detail-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .detail-item label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-item span {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .status-badge.in-progress {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+    </style>
+</body>
+</html>
